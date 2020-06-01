@@ -1,0 +1,368 @@
+Guía 1: Preparación del contexto y listado de películas
+
+    Preparación
+    Descargar MySQL.
+    Descargar Node.js y Express.
+    Descargar los recursos.
+
+    Paso 1: Comenzá a crear el modelo de datos
+        Creá la base de datos y la tabla para almacenar toda la información que va a utilizar 
+        tu aplicación.
+        Cuando termines de escribir el comando que vas a ejecutar para crear la tabla, copialo, 
+        pegalo y guardalo en script SQL. Este script va a contener la estructura de creación de 
+        todas las tablas que crees en tu proyecto.
+
+        Limitación
+        La tabla debe llamarse pelicula y contener los siguientes campos: 
+        Es necesario que nombres los campos y la tabla de la misma manera que te indicamos porque 
+        así están nombrados en el script. Si el script no encuentra la tabla o los campos con el 
+        mismo nombre con el que está programado, los datos no van a insertarse correctamente.
+
+    * * * * *     HECHO     * * * * *
+
+    Paso 2: Insertá los datos en la tabla
+        Los datos de las películas se encuentran en el script script-paso-1-películas.sql. 
+        Ejecutalo utilizando el comando correcto.
+
+        Recomiendan los/as Pro: Una vez que el script se termine de ejecutar, podes ir a la 
+        consola y hacer alguna consulta para ver los datos. Por ejemplo SELECT * FROM PELICULA 
+        para ver todas las películas que se insertaron en tu tabla.
+
+    * * * * *     HECHO     * * * * *
+
+    Paso 3: Comenzá a crear tu proyecto en Node.js
+        Para poder conectarte con la base de datos y responder los pedidos del front-end, 
+        comenzá a crear tu proyecto en Node. Para eso, vas a tener que seguir algunos pasos 
+        en el medio:
+
+        A. Creá el controlador que va a contener las funcionalidades del proyecto
+            En los recursos descargables, dentro de la carpeta “servidor”, hay otra carpeta llamada 
+            “controladores”. Una buena práctica sería crear el controlador dentro de esta carpeta, 
+            para que tu proyecto quede bien ordenado y estructurado.
+
+            Igualmente, no estaría mal si lo creás fuera de esta carpeta o en otra distinta. Lo 
+            importante es que a la hora de crear una referencia a ese controlador, indiques bien 
+            la ruta donde fue creado.
+
+    * * * * *     NO HECHO     * * * * *
+
+        B. Creá una referencia al controlador
+            En el archivo servidor.js referenciá al controlador que creaste. Vas a necesitar esta 
+            referencia para que el archivo servidor.js pueda decirle a ese controlador qué acción 
+            realizar según cada pedido.
+
+        * * * * *     HECHO     * * * * *
+
+        C. Creá el archivo package.json e instalá todas las dependencias
+            Primero, creá el archivo package.json donde vas a almacenar un registro actualizado de 
+            todas las dependencias que usa tu proyecto.
+
+            Luego, ingresá al archivo servidor.js. Te vas a encontrar con este código.
+
+            var express = require('express');
+            var bodyParser = require('body-parser');
+            var cors = require('cors');
+            Este código importa los paquetes que va a utilizar el proyecto. Reconocé cuáles son e 
+            instalalos a través de NPM. No te olvides de actualizar el package.json.
+
+            Nota: Como podés ver en el código, se utiliza un paquete llamado cors. Es utilizado para 
+            no tener problemas al hacer peticiones entre dominios diferentes. Instalá este paquete a 
+            través de NPM. Si queres investigar más, podés consultar la documentación del paquete cors.
+
+        * * * * *     HECHO     * * * * *
+
+        D. Establecé una conexión entre tu proyecto y la base de datos
+            Hasta ahora tu proyecto tiene dos partes: por un lado tenés tu proyecto en Node.js y por 
+            otro tenés una base de datos llena de películas.
+
+            En los recursos descargables, en el directorio servidor/lib vas a encontrar el archivo 
+            conexionbd.js. Completalo con los datos de tu base de datos.
+
+            Pista: ¿El archivo conexionbd.js utiliza algún paquete? Si la respuesta es sí, recordá 
+            instalarlo y actualizar el package.json.
+
+        * * * * *     HECHO     * * * * *
+
+    Paso 4: Creá una función que devuelva todas las películas
+
+        En el controlador, creá una función que le pida a la base de datos todas las películas y las 
+        envíe al front-end. Cuando decimos todas, es todas, sin orden ni filtros. Cuando el front-end 
+        obtenga esta información, va a poder mostrar todo el listado de películas.
+
+        Crear funciones en el back-end no es tan simple como parece, requiere de varios pasos que tenes 
+        que seguir. Específicamente, vas a tener que:
+
+        A. Identificar las caracteristicas del pedido
+            En el archivo películas.js, prestá atención a esta parte del código:
+
+            $.getJSON(server + "/peliculas?" + query,
+                        function(data) {
+                        self.cargarListado(data.peliculas);
+            (...)
+            Identificá la ruta a la que se le realiza el pedido. La función que crees se deberá ejecutar 
+            cuando se llame a esta ruta. Recordá que tenés que agregar la ruta que corresponda en el archivo 
+            servidor.js y definir cuál va a ser la acción que va a realizarse cuando se le haga un pedido a 
+            esa ruta
+            Identificá cómo se accede a la respuesta que envía el back-end. La información de las películas 
+            se encuentra en data.peliculas. Esto quiere decir que, en el back-end, cuando crees el objeto 
+            respuesta que va a ser enviado al front-end, las películas deben ser enviadas en un atributo 
+            llamado peliculas.
+
+        * * * * *     NO HECHO   (?)  * * * * *
+
+        B. Crear la función
+            Una vez que identifiques esas cuestiones, comenzá a crear la función que obtiene todas las 
+            películas de la base de datos y las envía al front-end. Cuando la termines, no olvides exportarla.
+
+            Es importante que las películas se encuentren en el atributo peliculas del objeto respuesta. 
+            Cuando el front-end quiera acceder a esa información, va a buscarla en el atributo peliculas del 
+            objeto respuesta. Si le pusiste otro nombre a ese atributo, el front-end no va a poder encontrar 
+            la información.
+
+            Pista: Node.js funciona asincrónicamente. Tenés que pensar en que parte del código vas a enviar 
+            la respuesta al cliente, para que se envíe sólo cuando se haya terminado de ejecutar la query y 
+            no antes. Si enviás la respuesta antes de que termine la query, se va a enviar vacía.
+
+            Nota : Si realizas un cambio en el back-end, para que se vean reflejados estos cambios, vas a 
+            tener que finalizar la ejecución del archivo servidor.js` desde la consola y luego volver a 
+            ejecutarlo.
+
+        * * * * *     NO HECHO  (?)   * * * * *
+
+        C. Probar que todo funcione correctamente
+            Cuando termines, poné tu función a prueba. Ejecutá el archivo servidor.js desde la consola y 
+            refrescá el index.html desde el navegador. Vas a poder ver el listado completo de películas.
+
+            Nota: Cuando ejecutes tu aplicación va a aparecerte un error como este, no te preocupes. 
+            Este error es porque la aplicación todavía no puede cargar los géneros en la parte de los filtros. 
+            En la próxima guía vas a encargarte de esa funcionalidad.
+
+        * * * * *     NO HECHO   (?)  * * * * *
+
+
+Guía 2: Filtros, orden y paginación de las películas.
+
+    Paso 1: Sumá el género de las películas al modelo
+
+        En este paso vas a sumar los géneros de las películas al modelo de datos. Haciendo esto vas 
+        a poder saber el género de cada película y así poder filtrarlas.
+        Sobre los géneros se conoce un identificador y su nombre (terror, aventura, romance, etc.). 
+
+        También se sabe que están relacionados con las películas: una película solo tiene un género, 
+        pero un mismo género está asociado a muchas películas.
+
+        Primero, armá el diagrama entidad-relación (DER) pensando de qué manera vas a relacionar las 
+        películas con su género, identificando la FK que va a permitir esta relación.
+
+        Después, creá la tabla para almacenar la información de los géneros. Recordá almacenar el 
+        comando que utilices para crear la tabla en el script que creaste en la guía 1.
+
+        Limitaciones
+        La tabla debe llamarse genero y contener los siguientes campos:
+
+            Que contiene el campo       Nombre del campo    Observaciones
+
+            Identificador               id                  Un identificador numerico autoincremental 
+                                                            de cada genero. Va a ser la clave primaria 
+                                                            de la tabla.
+            Nombre del genero           nombre              Cadena de caracteres (hasta 30)
+
+        Vas a tener que agregar el campo (genero_id) en la tabla película, que permita que estas dos 
+        tablas se relacionen. Este campo va a hacer referencia al id del género, por lo que tienen que 
+        tener el mismo tipo de dato.
+
+    Paso 2: Insertá la información de los géneros en tu base de datos.
+
+        Una vez que modifiques el modelo de datos, ejecutá el script script-paso-2-generos.sql. 
+        Este script va a insertar los géneros en la tabla que creaste y actualizar la tabla pelicula, 
+        agregando en el campo genero_id el id del género de la película.
+
+    Paso 3: Obtené todos los géneros
+        Creá la función en el back-end que se va a encargar de devolver todos lo géneros que existen 
+        en la base de datos. Una vez que el front-end obtenga esta información, va a cargar todos los 
+        géneros en la página principal de la aplicación.
+
+            * * * * * CAPTURA IMAGEN * * * * * 
+
+        Primero, identificá a qué ruta se le hace este pedido. La función que crees va a tener que 
+        ejecutarse cuando se llame a esa ruta. Además, identificá qué información necesita el front-end 
+        de los géneros.
+        Luego, creá la función que obtenga todos los géneros y los envíe al front-end. Cuando crees el 
+        objeto respuesta para enviar la información, agregá los géneros en el atributo generos. Al finalizar 
+        la función, exportala y determiná cuál es el pedido que tiene que hacer el front-end para que se 
+        ejecute esa acción.
+        Recomiendan los/as pro: Recordá que si tenes algún problema, podés utilizar la consola de JavaScript 
+        para visualizar los errores.
+
+    Paso 4: Terminá la función que devuelve todas las películas agregándole más funcionalidades.
+        En este paso vas a agregarle algunas funcionalidades a la función que devuelve todas las 
+        películas (la que creaste en el paso 4 de la guía 1).
+        Vas a tener que modificarla para que filtre las películas, las ordene y devuelva la cantidad 
+        que corresponda según los parámetros enviados desde el front-end.
+        Antes de empezar
+        Para ver cómo llegan los datos desde el front-end, aplicá algún filtro y realiza la búsqueda. 
+        En la pestaña Network de las herramientas de desarrollador del navegador podés visualizar los 
+        parámetros que se envían en la URL.
+
+            * * * * * CAPTURA IMAGEN * * * * * 
+
+        Los parámetros que se envían son los siguientes:
+
+        anio: contiene el año de estreno por el cuál se quiere filtrar las películas.
+        titulo: título por el cuál se quiere filtrar las películas.
+        genero: el id del género por el cuál se quiere filtrar las películas.
+        columna_orden: nombre de la columna por la cuál se quiere ordenar
+        tipo_orden: El tipo de orden (ascendente o descendente)
+        pagina: Número de página en la cuál se encuentra el usuario
+        cantidad: Cantidad de resultados mostrados por página. Siempre es la misma cantidad.
+        Filtro por año, título y género
+        Lo primero que vas a tener que hacer es permitir que las películas sean filtradas por año, 
+        título y género. Agrega esta funcionalidad a la consulta que se le realiza a la base de datos 
+        en esta función.
+
+        Recomiendan los/as pro: Los buenos buscadores de películas saben reconocer títulos similares. 
+        Cuando hagas el filtro por título ¿Vas a buscar exactamente el mismo título que se ingrese desde 
+        el front-end o vas a buscar títulos similares? ¿Si alguien busca “harry”, vas a devolver la 
+        película “Harry Potter and the order of the phoenix”?
+
+        Pista: Tené en cuenta que los filtros no siempre son enviados. Si el usuario no quiere filtrar 
+        por título, este parámetro no se envía a través de la URL, por lo que no deberías agregarlo a 
+        tu consulta.
+
+        Orden
+        Permití que las películas sean ordenadas según el criterio que se envió desde el front-end. 
+        Vas a tener que tener en cuenta por qué columna vas a ordenar y qué tipo de orden vas a utilizar.
+
+        Paginación
+        Para facilitar la navegación, vas a tener que limitar los resultados. Las películas en la base 
+        de datos son muchas y no queremos que se envíen todas juntas. Para hacer esta funcionalidad vas 
+        a tener que tener en cuenta los parámetros pagina y cantidad.
+
+        Pista: Por ejemplo, si el usuario de la aplicación se encuentra en la página 1 y la aplicación 
+        muestra 20 resultados por página el usuario deberá visualizar desde la fila 1 hasta la 20 de la 
+        tabla de la base de datos. Si el usuario pasa a la página 2 deberá visualizar desde la fila 21 
+        hasta la 40 inclusive. Repasá la cláusula LIMIT para poder resolver esta funcionalidad.
+
+        Total de resultados
+        El listado de películas que muestra el front-end se encuentra paginado. La cantidad de páginas 
+        se calcula en el front-end, pero desde el back-end vas a tener que enviar la cantidad de 
+        resultados obtenidos.
+
+        Dentro del callback de la consulta que realizaste anteriormente, vas a tener que realizar otra 
+        que devuelva la cantidad de resultados obtenidos. Una vez que obtengas este valor, agregalo al 
+        objeto respuesta, en un atributo llamado total y envíalo al front-end junto con las películas.
+
+        Nota: Recordá que la función query siempre devuelve un array con cada una de las filas. Si el 
+        resultado está compuesto de una sola fila, para acceder a ella vas a tener que hacerlo 
+        accediendo a la primera posición del array. Por ejemplo resultado[0].
+
+        Cuando termines esta función, refrescá el index.html y verificá que funcionen los filtros, 
+        el orden y que cuando cambies de página se muestren resultados distintos.
+
+Guía 3: Información de una película y recomendador.
+    Paso 1: Agregá los actores al modelo
+        Vas a sumar una entidad al modelo de datos: los actores. De ellos se conoce su nombre y un 
+        identificador.
+
+        Armá el diagrama entidad-relación (DER) pensando de qué manera vas a relacionar las películas 
+        con los actores. Una película tiene muchos actores y un actor puede participar en muchas 
+        películas. ¿Te imaginas cómo representar esta relación?
+        Creá la tabla que almacene la información de los actores.
+        Creá la tabla que relacione los actores con las películas
+
+        Limitaciones
+        La tabla de actores debe llamarse actor y contener los siguientes campos: 
+        
+            Que contiene el campo       Nombre del campo    Observaciones
+
+            Identificador               id                  Un identificador numerico autoincremental 
+                                                            de cada actor. Va a ser la clave primaria 
+                                                            de la tabla.
+            Nombre del actor           nombre               Cadena de caracteres (hasta 70)
+
+
+            Que contiene el campo       Nombre del campo    Observaciones
+
+        La tabla de relación debe llamarse actor_pelicula y contener los siguientes campos. 
+
+            Identificador               id                  Un identificador numerico autoincremental 
+                                                            de cada relacion.
+            Id del actor                actor_id            Una referencia al actor.
+            Id de la pelicula           pelicula_id         Una referencia a la pelicula.
+
+        No te olvides de almacenar la estructura de creación de estas tablas en el script que luego 
+        vas a tener que entregar.
+
+    Paso 2: Insertá la información de los actores
+        Una vez que modifiques el modelo de datos, ejecutá el script script-paso-3-actores.sql. 
+        Este script va a insertar en la tabla actor todos los actores y en la tabla actor_pelicula 
+        las relaciones entre los actores y las películas.
+
+    Paso 3: Creá una función que dado el id de una película devuelva toda su información.
+        En el archivo informacionDePelicula.js, prestale atención a esta parte del código, donde 
+        se accede a los distintos atributos de la respuesta del back-end:
+
+        pelicula = data.pelicula;
+                        actores = data.actores;
+                        genero = data.genero;
+
+        La información de la película, como su título y su trama, debe estar en el atributo pelicula 
+        del objeto respuesta que crees en el back-end. Los actores de la película deben estar en el 
+        atributo actores y el nombre del género debe estar en el atributo genero.
+
+        También identificá la ruta a la que se le hace este pedido.
+
+        Una vez que identifiques estas características, creá una función que obtenga el id que recibe 
+        en la URL y devuelva todos los datos necesarios de la película que tiene ese id. Si no existe 
+        ninguna película con ese id, debe enviar un error. El front-end se va a encargar de redirigir 
+        al usuario de la aplicación a la página erorr.html en el caso de que se busque una película 
+        que no existe.
+
+        Pista: ¿Los datos que necesitás están todos en una sola tabla o están distribuidos en varias? 
+        Si la respuesta es “sí”, repasá el concepto de la cláusula JOIN y fijate si te sirve para 
+        resolver esta cuestión.
+
+        Recomiendan los/as pro: Antes de hacer la consulta desde el back-end, probala en la consola 
+        de MySQL y verificá que devuelva los valores que necesitás.
+
+        Una vez que termines de realizar tu función, refrescá la página y hace click en cualquier 
+        imágen de una película. Si todo salió bien, se va a mostrar en otra página toda la información 
+        de la película que seleccionaste.
+
+    Paso 4: Creá la función que recomiende películas
+        El mejor feature de nuestra aplicación es el recomendador de películas según los criterios 
+        que seleccionen nuestros usuarios. Para completarla, vas a tener que tener en cuenta varias 
+        cuestiones.
+
+        Primero, en el archivo recomendaciones.js identificá:
+
+        La ruta a la cual se le piden las películas recomendadas
+        Cuáles son los parámetros que se envían al ejecutar el pedido
+        Qué datos envía el back-end acerca de esas películas.
+        Luego, creá una función que ejecute la consulta SQL correspondiente y obtenga todas películas 
+        recomendadas. Cuando crees el objeto respuesta para enviar al front-end, enviá las películas 
+        en un atributo llamado peliculas.
+
+        Pista: Los valores que se envían al back-end para obtener las recomendaciones no son siempre 
+        los mismos y no siempre se envían. Por ejemplo, si el usuario quiere ver una película bien 
+        puntuada pero no le interesa el género, el parámetro puntuación se va a enviar pero el 
+        parámetro género no. Recordá que podés usar la pestaña Network de las herramientas de 
+        desarrollador del navegador para visualizar los parámetros que se envían en la URL.
+
+        Una vez que termines, refrescá la página. Si todo salió bien, tu aplicación está lista para 
+        recomendarte una peli. ¡Respondé las preguntas y averigua qué peli podés ver hoy!
+
+        Para seguir
+        ¿Te quedaste con ganas de seguir? Una vez que termines tu aplicación podes agregarle las 
+        funcionalidades que vos quieras y mejorarla a tu gusto.
+
+        Podés hacer muchísimas mejoras a tu proyecto, para hacer la aplicación más interesante o 
+        agregarle funcionalidades.
+
+        Se me ocurren mil cosas que podrías agregar, por ejemplo:
+
+        Un nuevo tipo de filtro.
+        Un nuevo tipo de ordenamiento.
+        Un nuevo criterio para recomendar las películas.
+        Compartí tus proyectos con todos los agregados que quieras en la comunidad de Acámica, 
+        ¡compartí tus creaciones!
